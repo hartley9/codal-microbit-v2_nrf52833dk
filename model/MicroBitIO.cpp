@@ -92,7 +92,7 @@ MicroBitIO::MicroBitIO(NRF52ADC &a, TouchSensor &s) :
     buttonB(P11),
     face(logo)
 {
-    pins = 33;
+    pins = MICROBIT_PIN_INTERNAL_EXTERNAL_TOTAL;
     NRF52Pin::adc = &a;
     NRF52Pin::touchSensor = &s;
 
@@ -100,16 +100,7 @@ MicroBitIO::MicroBitIO(NRF52ADC &a, TouchSensor &s) :
     for (int i=19; i<pins; i++)
         pin[i].setPull(PullMode::None);
 
-    // Ensure all internal multiplexed pins are configured with no pull resistors.
-    col1.setPull(PullMode::None);
-    col2.setPull(PullMode::None);
-    col3.setPull(PullMode::None);
-    col4.setPull(PullMode::None);
-    col5.setPull(PullMode::None);
-    buttonA.setPull(PullMode::None);
-    buttonB.setPull(PullMode::None);
-
-    savedStatus = ManagedBuffer(pins + 1);
+    // Last array entry stores the saved/not-saved status
     savedStatus[pins] = 0;
 }
 
