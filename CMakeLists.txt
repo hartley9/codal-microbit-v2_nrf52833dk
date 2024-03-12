@@ -10,6 +10,28 @@ project(codal-microbit-v2)
 #    set( "__merged.config.${_key}" "${_val}" )
 #endforeach()
 
+# Grab the latest tag from git
+execute_process( WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} COMMAND git describe --tags --abbrev=0 OUTPUT_VARIABLE git_tag_string )
+message( "${CMAKE_CURRENT_SOURCE_DIR}" )
+message( "${git_tag_string}" )
+string( REGEX MATCHALL "[0-9]+" git_tag "${git_tag_string}" )
+
+# If we had a valid git response, update the values
+set( version_major 0 )
+set( version_minor 0 )
+set( version_patch 0 )
+list(LENGTH git_tag len)
+if( ${len} GREATER 0 )
+    list(GET git_tag 0 version_major )
+    list(GET git_tag 1 version_minor )
+    list(GET git_tag 2 version_patch )
+endif()
+
+# Write out the version values to our configuration file - CODAL_VERSION_STRING is generated in the preprocessor from these.
+file( APPEND "${EXTRA_INCLUDES_PATH}" " #define CODAL_VERSION_MAJOR ${version_major}\n" )
+file( APPEND "${EXTRA_INCLUDES_PATH}" " #define CODAL_VERSION_MINOR ${version_minor}\n" )
+file( APPEND "${EXTRA_INCLUDES_PATH}" " #define CODAL_VERSION_PATCH ${version_patch}\n" )
+
 LIST( LENGTH FINAL_FIELDS _idxMax )
 MATH( EXPR _idxMax "${_idxMax} - 1" )
 foreach( _index RANGE ${_idxMax} )
